@@ -44,6 +44,6 @@ app.use((err, req, res, next) => {
     }
 });
 
-app.listen(process.env.PORT || 3000, ()=>{
-    console.log('berjalan di port 3000');
+app.listen(process.env.PORT || 8081, ()=>{
+    console.log('berjalan di port 8081');
 });

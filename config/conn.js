@@ -12,7 +12,7 @@ conn.connect((err)=>{
     if(!err){
         console.log("Berhasil terkoneksi ke database");
     }else{
-        console.log("Gagal");
+        console.log("Gagal terkonski ke database");
     }
 });
 

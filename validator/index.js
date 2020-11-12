@@ -44,3 +44,24 @@ exports.createUserValidator = (req, res, next) => {
 
     next();
 }
+
+exports.signinValidator = (req, res, next) => {
+    req.check('email', 'E - Mail is required').notEmpty()
+    .matches(/.+\@.+\../)
+    .withMessage("Not a valid E - Mail Address")
+    .isLength({
+        min: 4,
+        max: 200
+    });
+
+    req.check('password', 'Password is required').notEmpty();
+
+    const errors = req.validationErrors();
+
+    if(errors){
+        const firstError = errors.map( error => error.msg)[0];
+        return res.status(400).json({error: firstError});
+    }
+
+    next();
+}

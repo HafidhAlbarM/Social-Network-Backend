@@ -15,7 +15,6 @@ exports.signup = (req, res) => {
         conn.query(query, (err, resQuery) => {
             if(!err){
                 if(resQuery.length==0){
-                    console.log(password);
                     bcrypt.hash(password, saltRounds, function(err, hash) {
                         const dataUser = {
                             'name': name,
@@ -34,7 +33,7 @@ exports.signup = (req, res) => {
                         })
                     });
                 }else{
-                    reject(res.json({message:"Email has already taken"}));
+                    resolve(res.json({error:"Email has already taken"}));
                 }
             }else{
                 reject(res.json({err}));
@@ -62,13 +61,13 @@ exports.signin = (req, res) => {
                     return res.json({token, user: {id, email, name}})
                 }else{
                     res.json({
-                        message: "Wrong password"
+                        error: "Wrong password"
                     });
                 }
             });
         }else{
             res.json({
-                message: "User with that email is not exist"
+                error: "User with that email is not exist"
             });
         }
     });    
