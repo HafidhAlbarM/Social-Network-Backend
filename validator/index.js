@@ -30,11 +30,12 @@ exports.createUserValidator = (req, res, next) => {
         max: 200
     });
 
-    req.check('password', "Password is required").notEmpty();
+    //required dihilangkan utk update user
+    // req.check('password', "Password is required").notEmpty();
 
-    req.check('password')
-    .isLength({min: 6})
-    .withMessage("Password must containt minimal 6 character");
+    // req.check('password')
+    // .isLength({min: 6})
+    // .withMessage("Password must containt minimal 6 character");
 
     const errors = req.validationErrors();
     if(errors){
