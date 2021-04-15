@@ -6,6 +6,10 @@ const {
   updateUser,
   deleteUser,
   userIdPhoto,
+  addFollowing,
+  addFollwer,
+  removeFollowing,
+  removeFollwer
 } = require("../controllers/user");
 const { requireSignin } = require("../controllers/auth");
 const { createUserValidator } = require("../validator");
@@ -28,6 +32,9 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
 });
+
+router.post("/user/follow", requireSignin, addFollowing, addFollwer);
+router.post("/user/unfollow", requireSignin, removeFollowing, removeFollwer);
 
 router.get("/users", allUsers);
 router.get("/user/:userId", requireSignin, getUser);
