@@ -11,24 +11,24 @@ exports.userById = (req, res, next, id) => {
   conn.query(query, (err, resQuery) => {
     if (!err) {
       if (resQuery.length == 1) {
-        query2 = `SELECT*FROM user_followers WHERE user_id='${id}'`
+        query2 = `SELECT*FROM user_followers WHERE user_id='${id}'`;
         conn.query(query2, (err, resQuery2) => {
-          if(!err){
-            query3 = `SELECT*FROM user_following WHERE following_id='${id}'`
+          if (!err) {
+            query3 = `SELECT*FROM user_following WHERE following_id='${id}'`;
             conn.query(query3, (err, resQuery3) => {
-              if(!err){
-                _.extend(resQuery[0],{
+              if (!err) {
+                _.extend(resQuery[0], {
                   followers: resQuery2,
-                  following: resQuery3
+                  following: resQuery3,
                 });
                 //mengambah objek profile pada request
                 req.profile = resQuery[0];
                 next();
-              }else{
+              } else {
                 res.json(err);
               }
             });
-          }else{
+          } else {
             res.json(err);
           }
         });
@@ -143,17 +143,17 @@ exports.addFollowing = (req, res, next) => {
   let query = "INSERT INTO user_following SET ?";
   let dataInsert = {
     user_id,
-    following_id
-  }
+    following_id,
+  };
 
   conn.query(query, dataInsert, (err, resQuery) => {
-    if(!err){
+    if (!err) {
       next();
-    }else{
+    } else {
       res.json(err);
     }
-  })
-}
+  });
+};
 
 exports.addFollwer = (req, res, next) => {
   let user_id = req.body.following_id;
@@ -162,31 +162,31 @@ exports.addFollwer = (req, res, next) => {
   let query = "INSERT INTO user_followers SET ?";
   let dataInsert = {
     user_id,
-    follower_id
-  }
+    follower_id,
+  };
 
   conn.query(query, dataInsert, (err, resQuery) => {
-    if(!err){
+    if (!err) {
       query = `SELECT*FROM ${table} WHERE id='${user_id}'`;
       conn.query(query, (err, resQuery) => {
         if (!err) {
           if (resQuery.length == 1) {
-            query2 = `SELECT*FROM user_followers WHERE follower_id='${follower_id}'`
+            query2 = `SELECT*FROM user_followers WHERE follower_id='${follower_id}'`;
             conn.query(query2, (err, resQuery2) => {
-              if(!err){
-                query3 = `SELECT*FROM user_following WHERE user_id='${follower_id}'`
+              if (!err) {
+                query3 = `SELECT*FROM user_following WHERE user_id='${follower_id}'`;
                 conn.query(query3, (err, resQuery3) => {
-                  if(!err){
-                    _.extend(resQuery[0],{
+                  if (!err) {
+                    _.extend(resQuery[0], {
                       followers: resQuery2,
-                      following: resQuery3
+                      following: resQuery3,
                     });
                     res.json(resQuery[0]);
-                  }else{
+                  } else {
                     res.json(err);
                   }
                 });
-              }else{
+              } else {
                 res.json(err);
               }
             });
@@ -197,12 +197,11 @@ exports.addFollwer = (req, res, next) => {
           res.json(err);
         }
       });
-    }else{
+    } else {
       res.json(err);
     }
-  })
-}
-
+  });
+};
 
 exports.removeFollowing = (req, res, next) => {
   let user_id = req.body.userId;
@@ -211,13 +210,13 @@ exports.removeFollowing = (req, res, next) => {
   let query = `DELETE FROM user_following WHERE user_id='${user_id}' AND following_id='${unfollow_id}'`;
 
   conn.query(query, (err, resQuery) => {
-    if(!err){
+    if (!err) {
       next();
-    }else{
+    } else {
       res.json(err);
     }
-  })
-}
+  });
+};
 
 exports.removeFollwer = (req, res, next) => {
   let unfollow_id = req.body.unfollow_id;
@@ -228,27 +227,27 @@ exports.removeFollwer = (req, res, next) => {
   console.log(query);
 
   conn.query(query, (err, resQuery) => {
-    if(!err){
+    if (!err) {
       queryNya = `SELECT*FROM ${table} WHERE id='${unfollow_id}'`;
       conn.query(queryNya, (err, resQuery) => {
         if (!err) {
           if (resQuery.length == 1) {
-            query2 = `SELECT*FROM user_followers WHERE follower_id='${user_id}'`
+            query2 = `SELECT*FROM user_followers WHERE follower_id='${user_id}'`;
             conn.query(query2, (err, resQuery2) => {
-              if(!err){
-                query3 = `SELECT*FROM user_following WHERE user_id='${user_id}'`
+              if (!err) {
+                query3 = `SELECT*FROM user_following WHERE user_id='${user_id}'`;
                 conn.query(query3, (err, resQuery3) => {
-                  if(!err){
-                    _.extend(resQuery[0],{
+                  if (!err) {
+                    _.extend(resQuery[0], {
                       followers: resQuery2,
-                      following: resQuery3
+                      following: resQuery3,
                     });
                     res.json(resQuery[0]);
-                  }else{
+                  } else {
                     res.json(err);
                   }
                 });
-              }else{
+              } else {
                 res.json(err);
               }
             });
@@ -259,8 +258,8 @@ exports.removeFollwer = (req, res, next) => {
           res.json(err);
         }
       });
-    }else{
+    } else {
       res.json(err);
     }
-  })
-}
+  });
+};

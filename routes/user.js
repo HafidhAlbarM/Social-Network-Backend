@@ -9,7 +9,7 @@ const {
   addFollowing,
   addFollwer,
   removeFollowing,
-  removeFollwer
+  removeFollwer,
 } = require("../controllers/user");
 const { requireSignin } = require("../controllers/auth");
 const { createUserValidator } = require("../validator");
