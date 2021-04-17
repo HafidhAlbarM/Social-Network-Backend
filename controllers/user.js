@@ -11,10 +11,10 @@ exports.userById = (req, res, next, id) => {
   conn.query(query, (err, resQuery) => {
     if (!err) {
       if (resQuery.length == 1) {
-        query2 = `SELECT*FROM user_followers WHERE user_id='${id}'`;
+        query2 = `SELECT a.id, a.user_id, a.follower_id, b.name FROM user_followers a LEFT JOIN user b on a.follower_id = b.id WHERE user_id='${id}'`;
         conn.query(query2, (err, resQuery2) => {
           if (!err) {
-            query3 = `SELECT*FROM user_following WHERE following_id='${id}'`;
+            query3 = `SELECT a.id, a.user_id, a.following_id, b.name FROM user_following a LEFT JOIN user b ON a.following_id = b.id WHERE user_id='${id}'`;
             conn.query(query3, (err, resQuery3) => {
               if (!err) {
                 _.extend(resQuery[0], {
@@ -171,10 +171,10 @@ exports.addFollwer = (req, res, next) => {
       conn.query(query, (err, resQuery) => {
         if (!err) {
           if (resQuery.length == 1) {
-            query2 = `SELECT*FROM user_followers WHERE follower_id='${follower_id}'`;
+            query2 = `SELECT a.id, a.user_id, a.follower_id, b.name FROM user_followers a LEFT JOIN user b ON a.follower_id = b.id WHERE follower_id='${follower_id}'`;
             conn.query(query2, (err, resQuery2) => {
               if (!err) {
-                query3 = `SELECT*FROM user_following WHERE user_id='${follower_id}'`;
+                query3 = `SELECT a.id, a.user_id, a.following_id, b.name FROM user_following a LEFT JOIN user b ON a.following_id = b.id WHERE user_id='${user_id}'`;
                 conn.query(query3, (err, resQuery3) => {
                   if (!err) {
                     _.extend(resQuery[0], {
@@ -224,18 +224,18 @@ exports.removeFollwer = (req, res, next) => {
 
   let query = `DELETE FROM user_followers WHERE user_id='${unfollow_id}' AND follower_id='${user_id}'`;
 
-  console.log(query);
-
   conn.query(query, (err, resQuery) => {
     if (!err) {
       queryNya = `SELECT*FROM ${table} WHERE id='${unfollow_id}'`;
+
       conn.query(queryNya, (err, resQuery) => {
         if (!err) {
           if (resQuery.length == 1) {
-            query2 = `SELECT*FROM user_followers WHERE follower_id='${user_id}'`;
+            query2 = `SELECT a.id, a.user_id, a.follower_id, b.name FROM user_followers a LEFT JOIN user b ON a.follower_id = b.id WHERE user_id='${unfollow_id}'`;
+            console.log(query2);
             conn.query(query2, (err, resQuery2) => {
               if (!err) {
-                query3 = `SELECT*FROM user_following WHERE user_id='${user_id}'`;
+                query3 = `SELECT a.id, a.user_id, a.following_id, b.name FROM user_following a LEFT JOIN user b ON a.following_id = b.id WHERE user_id='${unfollow_id}'`;
                 conn.query(query3, (err, resQuery3) => {
                   if (!err) {
                     _.extend(resQuery[0], {
