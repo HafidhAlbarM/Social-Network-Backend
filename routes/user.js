@@ -10,6 +10,7 @@ const {
   addFollwer,
   removeFollowing,
   removeFollwer,
+  findPeople,
 } = require("../controllers/user");
 const { requireSignin } = require("../controllers/auth");
 const { createUserValidator } = require("../validator");
@@ -42,6 +43,9 @@ router.put("/user/:userId", requireSignin, upload.single("photo"), updateUser);
 router.delete("/user/:userId", requireSignin, deleteUser);
 //photo
 router.get("/user/photo/:userId", userIdPhoto);
+
+//who to folow
+router.get("/users/findpeople/:userId", requireSignin, findPeople);
 
 //kalau ada route yg paramnya userId, maka akan execute method userById dahulu
 router.param("userId", userById);

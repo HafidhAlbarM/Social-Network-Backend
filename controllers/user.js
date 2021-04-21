@@ -171,7 +171,7 @@ exports.addFollwer = (req, res, next) => {
       conn.query(query, (err, resQuery) => {
         if (!err) {
           if (resQuery.length == 1) {
-            query2 = `SELECT a.id, a.user_id, a.follower_id, b.name FROM user_followers a LEFT JOIN user b ON a.follower_id = b.id WHERE follower_id='${follower_id}'`;
+            query2 = `SELECT a.id, a.user_id, a.follower_id, b.name FROM user_followers a LEFT JOIN user b ON a.follower_id = b.id WHERE user_id='${user_id}'`;
             conn.query(query2, (err, resQuery2) => {
               if (!err) {
                 query3 = `SELECT a.id, a.user_id, a.following_id, b.name FROM user_following a LEFT JOIN user b ON a.following_id = b.id WHERE user_id='${user_id}'`;
@@ -254,6 +254,33 @@ exports.removeFollwer = (req, res, next) => {
           } else {
             res.json({ message: "User not found" });
           }
+        } else {
+          res.json(err);
+        }
+      });
+    } else {
+      res.json(err);
+    }
+  });
+};
+
+exports.findPeople = (req, res) => {
+  let userId = req.params.userId;
+  let query = `SELECT*FROM user_following WHERE user_id=${userId}`;
+  conn.query(query, (err, resQuery) => {
+    if (!err) {
+      let followingList = [];
+
+      followingList.push(userId);
+      resQuery.map((user) => {
+        followingList.push(user.following_id);
+      });
+
+      let strIn = followingList.join();
+      let query2 = `SELECT*FROM user WHERE id NOT IN(${strIn})`;
+      conn.query(query2, (err, resQuery2) => {
+        if (!err) {
+          res.json(resQuery2);
         } else {
           res.json(err);
         }
