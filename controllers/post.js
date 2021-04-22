@@ -18,49 +18,45 @@ exports.postById = (req, res, next, id) => {
 };
 
 exports.getPosts = (req, res) => {
-  conn.query(`SELECT*FROM ${table}`, (err, resQuery) => {
-    if (err) {
-      res.send({
-        info: err,
-      });
-    } else {
-      res.json({
-        posts: resQuery,
-      });
+  conn.query(
+    `SELECT a.id, a.title, a.body, a.photo_path, a.photo_content_type, a.created_at, a.created_by, b.name, a.updated_at, a.updated_by 
+    FROM ${table} a 
+    LEFT JOIN user b on a.created_by=b.id
+    ORDER BY a.created_at DESC`,
+    (err, resQuery) => {
+      if (err) {
+        res.send({
+          info: err,
+        });
+      } else {
+        res.json(resQuery);
+      }
     }
-  });
+  );
 };
 
 exports.createPost = (req, res, next) => {
-  let form = new formidable.IncomingForm();
   const user = req.profile;
-  let photo = {};
 
-  form.keepExtensions = true;
-  form.parse(req, (err, fields, files) => {
-    if (err) {
-      res.status(400).json(err);
-    }
+  let dataInsert = {
+    title: req.body.title,
+    body: req.body.body,
+    photo_path: req.filePath,
+    photo_content_type: req.fileContentType,
+    created_at: time.currentDateTime(),
+    created_by: user.id,
+  };
 
-    if (files.photo) {
-      photo.data = fs.readFileSync(files.photo.path);
-      photo.contentType = files.photo.type;
-    }
-
-    let dataInsert = {
-      title: fields.title,
-      body: fields.body,
-      created_at: time.currentDateTime(),
-      created_by: user.id,
-    };
-
-    conn.query(`INSERT INTO ${table} SET ?`, dataInsert, (err, resquery) => {
+  conn.query(`INSERT INTO ${table} SET ?`, dataInsert, (err, resQuery) => {
+    if (!err) {
       res.json({
         message: "Data saved successfully",
         post: dataInsert,
         resQuery,
       });
-    });
+    } else {
+      res.json(err);
+    }
   });
 };
 
