@@ -7,6 +7,8 @@ const {
   isPoster,
   updatePost,
   deletePost,
+  postPhoto,
+  singlePost,
 } = require("../controllers/post");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -40,8 +42,11 @@ router.post(
   createPost
 );
 router.get("/posts/by/:userId", requireSignin, postsByUser);
+router.get("/post/:postId", singlePost);
 router.put("/post/:postId", requireSignin, isPoster, updatePost);
 router.delete("/post/:postId", requireSignin, isPoster, deletePost);
+//photo
+router.get("/post/photo/:postId", postPhoto);
 
 router.param("userId", userById);
 router.param("postId", postById);

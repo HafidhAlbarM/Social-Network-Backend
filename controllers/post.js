@@ -124,3 +124,27 @@ exports.deletePost = (req, res) => {
     }
   });
 };
+
+exports.postPhoto = (req, res, next) => {
+  if (req.post.photo_path != null) {
+    fs.readFile(req.post.photo_path, (err, data) => {
+      if (err) throw err;
+      else {
+        res.writeHead(200, { "Content-Type": req.post.photo_content_type });
+        res.end(data); // Send the file data to the browser.
+      }
+    });
+  } else {
+    fs.readFile("./uploads/images/posts/post.jpg", (err, data) => {
+      if (err) throw err;
+      else {
+        res.writeHead(200, { "Content-Type": req.post.photo_content_type });
+        res.end(data); // Send the file data to the browser.
+      }
+    });
+  }
+};
+
+exports.singlePost = (req, res) => {
+  return res.json(req.post);
+};
