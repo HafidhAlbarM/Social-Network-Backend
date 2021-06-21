@@ -13,10 +13,12 @@
 
 
 -- Dumping database structure for socialnetworkudemy
+DROP DATABASE IF EXISTS `socialnetworkudemy`;
 CREATE DATABASE IF NOT EXISTS `socialnetworkudemy` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `socialnetworkudemy`;
 
 -- Dumping structure for table socialnetworkudemy.posts
+DROP TABLE IF EXISTS `posts`;
 CREATE TABLE IF NOT EXISTS `posts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(80) DEFAULT NULL,
@@ -38,6 +40,7 @@ REPLACE INTO `posts` (`id`, `title`, `body`, `photo_path`, `photo_content_type`,
 /*!40000 ALTER TABLE `posts` ENABLE KEYS */;
 
 -- Dumping structure for table socialnetworkudemy.user
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
@@ -52,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 
--- Dumping data for table socialnetworkudemy.user: ~4 rows (approximately)
+-- Dumping data for table socialnetworkudemy.user: ~5 rows (approximately)
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 REPLACE INTO `user` (`id`, `name`, `email`, `hashed_password`, `salt`, `photo_path`, `photo_content_type`, `about`, `created_at`, `updated_at`) VALUES
 	(2, 'jane', 'jane@gmail.com', '$2b$10$tqcNyxawfBLF1hNg3wwkMuf1GaKGqQAcr6eA/PNxBmPp/Lznp.1Vy', '10', NULL, NULL, 'Vue JS Ninja', '2020-10-21 15:54:24', NULL),
@@ -63,6 +66,7 @@ REPLACE INTO `user` (`id`, `name`, `email`, `hashed_password`, `salt`, `photo_pa
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 -- Dumping structure for table socialnetworkudemy.user_followers
+DROP TABLE IF EXISTS `user_followers`;
 CREATE TABLE IF NOT EXISTS `user_followers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
@@ -70,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `user_followers` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=latin1;
 
--- Dumping data for table socialnetworkudemy.user_followers: ~4 rows (approximately)
+-- Dumping data for table socialnetworkudemy.user_followers: ~3 rows (approximately)
 /*!40000 ALTER TABLE `user_followers` DISABLE KEYS */;
 REPLACE INTO `user_followers` (`id`, `user_id`, `follower_id`) VALUES
 	(83, 4, 2),
@@ -79,6 +83,7 @@ REPLACE INTO `user_followers` (`id`, `user_id`, `follower_id`) VALUES
 /*!40000 ALTER TABLE `user_followers` ENABLE KEYS */;
 
 -- Dumping structure for table socialnetworkudemy.user_following
+DROP TABLE IF EXISTS `user_following`;
 CREATE TABLE IF NOT EXISTS `user_following` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
