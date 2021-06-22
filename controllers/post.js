@@ -4,17 +4,51 @@ const time = require("../config/time");
 const formidable = require("formidable");
 const fs = require("fs");
 const table = "posts";
+const moment = require("moment");
 
 exports.postById = (req, res, next, id) => {
-  let query = `SELECT*FROM ${table} WHERE id='${id}'`;
+  let query = `SELECT 
+               a.id, a.title, a.body, a.photo_path, a.photo_content_type, a.created_at, a.created_by, a.updated_at, a.updated_by, b.name 
+               FROM ${table} a 
+               LEFT JOIN user b on a.created_by=b.id
+               WHERE a.id='${id}'`;
+
   conn.query(query, (err, resQuery) => {
     if (!err) {
       let query2 = `SELECT*FROM post_likes WHERE post_id=${id}`;
       conn.query(query2, (err, resQuery2) => {
         if (!err) {
-          let data = _.extend(resQuery[0], { post_likes: resQuery2 });
-          req.post = data;
-          next();
+          let query3 = `SELECT a.id, a.post_id, a.text, a.created_at, a.created_by, b.name 
+                        FROM post_comments a
+                        LEFT JOIN user b on a.created_by = b.id
+                        WHERE a.post_id=${id}
+                        ORDER BY created_at desc`;
+          conn.query(query3, (err, resQuery3) => {
+            if (!err) {
+              array_post_comments = [];
+              for (let key in resQuery3) {
+                let dataComment = {
+                  id: resQuery3[key].id,
+                  post_id: resQuery3[key].post_id,
+                  text: resQuery3[key].text,
+                  created_by: resQuery3[key].created_by,
+                  created_at: moment(resQuery3[key].created_at).format(
+                    "MM/DD/YYYY hh:mm:ss"
+                  ),
+                  name: resQuery3[key].name,
+                };
+                array_post_comments.push(dataComment);
+              }
+              let data = _.extend(resQuery[0], {
+                post_likes: resQuery2,
+                post_comments: array_post_comments,
+              });
+              req.post = data;
+              next();
+            } else {
+              res.json(err);
+            }
+          });
         } else {
           res.json(err);
         }
@@ -182,7 +216,6 @@ exports.like = (req, res) => {
 };
 
 exports.unlike = (req, res) => {
-  console.log(req.body);
   let post_id = req.body.post_id;
   let user_id = req.body.user_id;
   let query = `DELETE FROM post_likes WHERE post_id=${post_id} AND user_id=${user_id}`;
@@ -190,6 +223,61 @@ exports.unlike = (req, res) => {
   conn.query(query, (err, resQuery) => {
     if (!err) {
       let query2 = `SELECT*FROM post_likes WHERE post_id=${post_id}`;
+      conn.query(query2, (err, resQuery2) => {
+        if (!err) {
+          res.json(resQuery2);
+        } else {
+          res.json(err);
+        }
+      });
+    } else {
+      res.json(err);
+    }
+  });
+};
+
+exports.comment = (req, res) => {
+  let post_id = req.body.post_id;
+  let text = req.body.text;
+  let created_by = req.body.created_by;
+  let created_at = new Date();
+
+  let dataInsert = { post_id, text, created_by, created_at };
+
+  let query = `INSERT INTO post_comments SET ?`;
+
+  conn.query(query, dataInsert, (err, resQuery) => {
+    if (!err) {
+      let query2 = `SELECT a.id, a.post_id, a.text, a.created_at, a.created_by, b.name 
+                    FROM post_comments a
+                    LEFT JOIN user b on a.created_by = b.id 
+                    WHERE a.post_id=${post_id}
+                    ORDER BY created_at desc`;
+      conn.query(query2, (err, resQuery2) => {
+        if (!err) {
+          res.json(resQuery2);
+        } else {
+          res.json(err);
+        }
+      });
+    } else {
+      res.json(err);
+    }
+  });
+};
+
+exports.uncomment = (req, res) => {
+  let id = req.body.comment_id;
+  let post_id = req.body.post_id;
+
+  let query = `DELETE FROM post_comments WHERE id=${id}`;
+
+  conn.query(query, (err, resQuery) => {
+    if (!err) {
+      let query2 = `SELECT a.id, a.post_id, a.text, a.created_at, a.created_by, b.name 
+                    FROM post_comments a
+                    LEFT JOIN user b on a.created_by = b.id 
+                    WHERE a.post_id=${post_id}`;
       conn.query(query2, (err, resQuery2) => {
         if (!err) {
           res.json(resQuery2);
