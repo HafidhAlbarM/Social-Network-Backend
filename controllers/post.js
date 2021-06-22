@@ -9,8 +9,16 @@ exports.postById = (req, res, next, id) => {
   let query = `SELECT*FROM ${table} WHERE id='${id}'`;
   conn.query(query, (err, resQuery) => {
     if (!err) {
-      req.post = resQuery[0];
-      next();
+      let query2 = `SELECT*FROM post_likes WHERE post_id=${id}`;
+      conn.query(query2, (err, resQuery2) => {
+        if (!err) {
+          let data = _.extend(resQuery[0], { post_likes: resQuery2 });
+          req.post = data;
+          next();
+        } else {
+          res.json(err);
+        }
+      });
     } else {
       res.json(err);
     }
@@ -147,4 +155,50 @@ exports.postPhoto = (req, res, next) => {
 
 exports.singlePost = (req, res) => {
   return res.json(req.post);
+};
+
+exports.like = (req, res) => {
+  let post_id = req.body.post_id;
+  let user_id = req.body.user_id;
+
+  let dataInsert = { post_id, user_id };
+
+  let query = `INSERT INTO post_likes SET ?`;
+
+  conn.query(query, dataInsert, (err, resQuery) => {
+    if (!err) {
+      let query2 = `SELECT*FROM post_likes WHERE post_id=${post_id}`;
+      conn.query(query2, (err, resQuery2) => {
+        if (!err) {
+          res.json(resQuery2);
+        } else {
+          res.json(err);
+        }
+      });
+    } else {
+      res.json(err);
+    }
+  });
+};
+
+exports.unlike = (req, res) => {
+  console.log(req.body);
+  let post_id = req.body.post_id;
+  let user_id = req.body.user_id;
+  let query = `DELETE FROM post_likes WHERE post_id=${post_id} AND user_id=${user_id}`;
+
+  conn.query(query, (err, resQuery) => {
+    if (!err) {
+      let query2 = `SELECT*FROM post_likes WHERE post_id=${post_id}`;
+      conn.query(query2, (err, resQuery2) => {
+        if (!err) {
+          res.json(resQuery2);
+        } else {
+          res.json(err);
+        }
+      });
+    } else {
+      res.json(err);
+    }
+  });
 };

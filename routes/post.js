@@ -9,6 +9,8 @@ const {
   deletePost,
   postPhoto,
   singlePost,
+  like,
+  unlike,
 } = require("../controllers/post");
 const { requireSignin } = require("../controllers/auth");
 const { userById } = require("../controllers/user");
@@ -53,6 +55,10 @@ router.put(
 router.delete("/post/:postId", requireSignin, isPoster, deletePost);
 //photo
 router.get("/post/photo/:postId", postPhoto);
+
+//like/unline
+router.post("/post/like", requireSignin, like);
+router.post("/post/unlike/:postId", requireSignin, unlike);
 
 router.param("userId", userById);
 router.param("postId", postById);
